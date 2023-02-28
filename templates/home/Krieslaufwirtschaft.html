@@ -1,0 +1,281 @@
+{% extends "layouts/base.html" %}
+
+{% block title %} Dashboard {% endblock %}
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+
+    <div class="content">
+        <div class="panel-header bg-light-gradient">
+            <div class="page-inner py-5">
+                <div class="d-flex flex-row justify-content-between">
+                    <div class="d-flex align-items-left align-items-md-center flex-column flex-md-row">
+                        <div>
+                            <h2 class="text-black pb-2 fw-bold">FTI-QUERSCHNITTSTHEMEN</h2>
+                            <h5 class="text-black op-7 mb-2">Kreislaufwirtschaft</h5>
+                        </div>
+                    </div>
+                    <div>
+                        <!-- Button trigger modal -->
+                        <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                                data-bs-target="#exampleModal">
+                            Add
+                        </button>
+
+                        <!-- Modal -->
+                        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+                             aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h1 class="modal-title fs-5" id="exampleModalLabel">Add a table</h5>
+                                    </div>
+                                    <form id="formsadd" method="POST" action="addTable" class="row g-3 p-2">
+                                        {% csrf_token %}
+                                        <div class="modal-body">
+                                            <div class="col-md-12">
+                                                <label class="form-label">Name</label>
+                                                <input id="itsName" type="text" name="tablename" class="form-control"
+                                                       required>
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                                Close
+                                            </button>
+                                            <button type="submit" class="btn btn-primary">Save changes</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% for table in tables %}
+            <!-- {{ i|add:"1" }} -->
+            <div class="container text-center border mb-3">
+                <table class="table">
+                    <div class="d-flex flex-row justify-content-between">
+                        <div>
+                            <h3 class="lead mx-5">{{ table }}</h3>
+                            <button class="btn btn-success mx-5 py-0 my-1" data-bs-toggle="modal"
+                                    data-bs-target="#{{ table }}{{ i }}">Edit
+                            </button>
+                        </div>
+                        <!-- Modal -->
+                        <div class="modal fade" id="{{ table }}{{ i }}" tabindex="-1"
+                             aria-labelledby="exampleModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h1 class="modal-title fs-5" id="exampleModalLabel">Edit table</h5>
+                                    </div>
+                                    <form id="tableedit" method="POST" action="editTable" class="row g-3 p-2">
+                                        {% csrf_token %}
+                                        <div class="modal-body">
+                                            <div class="col-md-12">
+                                                <input id="oldName" type="text" name="tableoldname" class="form-control"
+                                                       value={{ table }} hidden>
+                                            </div>
+                                            <div class="col-md-12">
+                                                <label class="form-label" aria-disabled="true">New Name</label>
+                                                <input id="itsName" type="text" name="tablenewname" class="form-control"
+                                                       required>
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                                Close
+                                            </button>
+                                            <button type="submit" class="btn btn-primary">Save changes</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <button type="button" class="btn btn-success mx-5 my-1" data-bs-toggle="modal"
+                                    data-bs-target="#{{ table }}">Add
+                            </button>
+                        </div>
+                        <div class="modal fade" id="{{ table }}" tabindex="-1" aria-labelledby="exampleModalLabel"
+                             aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h1 class="modal-title fs-5" id="exampleModalLabel">Add a table</h5>
+                                    </div>
+                                    <form id="addrows" method="POST" action="addRows" class="row g-3 p-2">
+                                        {% csrf_token %}
+                                        <div class="modal-body">
+                                            <input id="tablee" type="text" name="tablee" class="form-control"
+                                                   value={{ table }} hidden/>
+
+                                            <div class="col-md-12">
+                                                <label class="form-label">Name</label>
+                                                <input id="Teilindikator" type="text" name="Teilindikator"
+                                                       class="form-control" required/>
+                                            </div>
+                                            <div class="col-md-12">
+                                                <label class="form-label">Datenquelle</label>
+                                                <input id="Datenquelle" type="text" name="Datenquelle"
+                                                       class="form-control" required/>
+                                            </div>
+                                            <div class="col-md-12">
+                                                <label class="form-label">Datum</label>
+                                                <input id="Datum" type="date" name="Datum" class="form-control"
+                                                       required/>
+                                            </div>
+                                            <div class="col-md-12">
+                                                <label class="form-label">Status</label>
+                                                <input id="Status" type="text" name="Status" class="form-control"
+                                                       required/>
+                                            </div>
+                                            <div class="col-md-12">
+                                                <label class="form-label">Wert</label>
+                                                <input id="Wert" type="number" name="Wert" class="form-control"
+                                                       required/>
+                                            </div>
+                                            <div class="col-md-12">
+                                                <label class="form-label">Top3</label>
+                                                <input id="Top3" type="number" name="Top3" class="form-control"
+                                                       required/>
+                                            </div>
+                                            <div class="col-md-12">
+                                                <label class="form-label">Durchschnitt</label>
+                                                <input id="Durchschnitt" type="number" name="Durchschnitt"
+                                                       class="form-control" required/>
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                                Close
+                                            </button>
+                                            <button type="submit" class="btn btn-primary">Save changes</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <thead class="thead-light">
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Teilindikator</th>
+                        <th scope="col">Datenquelle</th>
+                        <th scope="col">Datum</th>
+                        <th scope="col">Status</th>
+                        <th scope="col">Wert</th>
+                        <th scope="col">Top-3</th>
+                        <th scope="col">EU Durchschnitt</th>
+                        <th scope="col">Edit</th>
+                        <th scope="col">Delete</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for resul in result %}
+                        {% if resul.Tables == table %}
+                            <tr>
+                                <td>{{ resul.id }}</td>
+                                <td>{{ resul }}</td>
+                                <td>{{ resul.Datenquelle }}</td>
+                                <td>{{ resul.Datum }}</td>
+                                <td>{{ resul.Status }}</td>
+                                <td>{{ resul.Wert }}</td>
+                                <td>{{ resul.Top3 }}</td>
+                                <td>{{ resul.EUDurchschnitt }}</td>
+                                <td>
+                                    <button class="btn btn-primary" data-bs-toggle="modal"
+                                            data-bs-target="#{{ resul }}">Edit
+                                    </button>
+                                </td>
+                                <td>
+                                    <form id="deleteRows" method="post" action="deleterows">{% csrf_token %}<input
+                                            id="recordid" type="text" name="recordid" class="form-control"
+                                            value={{ resul.id }} hidden/>
+                                        <button class="btn btn-primary" data-bs-toggle="modal"
+                                                data-bs-target="#{{ resul }}{i}">Delete
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                            <div class="modal fade" id="{{ resul }}" tabindex="-1" aria-labelledby="exampleModalLabel"
+                                 aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h1 class="modal-title fs-5" id="exampleModalLabel">Edit a table</h5>
+                                        </div>
+                                        <form id="addrows" method="POST" action="editrows" class="row g-3 p-2">
+                                            {% csrf_token %}
+                                            <div class="modal-body">
+                                                <input id="recordid" type="text" name="recordid" class="form-control"
+                                                       value={{ resul.id }} hidden/>
+
+                                                <div class="col-md-12">
+                                                    <label class="form-label">Name</label>
+                                                    <input id="Teilindikator" type="text" name="Teilindikator"
+                                                           class="form-control" value={{ resul }} required/>
+                                                </div>
+                                                <div class="col-md-12">
+                                                    <label class="form-label">Datenquelle</label>
+                                                    <input id="Datenquelle" type="text" name="Datenquelle"
+                                                           class="form-control" value={{ resul.Datenquelle }} required/>
+                                                </div>
+                                                <div class="col-md-12">
+                                                    <label class="form-label">Datum</label>
+                                                    <input id="Datum" type="date" name="Datum" class="form-control"
+                                                           value='{{ resul.Datum|date:"Y-m-d" }}' required/>
+                                                </div>
+                                                <div class="col-md-12">
+                                                    <label class="form-label">Status</label>
+                                                    <input id="Status" type="text" name="Status" class="form-control"
+                                                           value={{ resul.Status }} required/>
+                                                </div>
+                                                <div class="col-md-12">
+                                                    <label class="form-label">Wert</label>
+                                                    <input id="Wert" type="number" name="Wert" class="form-control"
+                                                           value={{ resul.Wert }} required/>
+                                                </div>
+                                                <div class="col-md-12">
+                                                    <label class="form-label">Top3</label>
+                                                    <input id="Top3" type="number" name="Top3" class="form-control"
+                                                           value={{ resul.Top3 }} required/>
+                                                </div>
+                                                <div class="col-md-12">
+                                                    <label class="form-label">Durchschnitt</label>
+                                                    <input id="Durchschnitt" type="number" name="Durchschnitt"
+                                                           class="form-control"
+                                                           value={{ resul.EUDurchschnitt }} required/>
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                                    Close
+                                                </button>
+                                                <button type="submit" class="btn btn-primary">Save changes</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+            </tbody>
+            </table>
+            </div>
+        {% endfor %}</div>
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+
+
+{% endblock javascripts %}

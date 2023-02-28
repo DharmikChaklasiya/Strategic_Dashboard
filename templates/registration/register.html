@@ -1,0 +1,46 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'assets/css/login.css' %}">
+    <title>Register</title>
+</head>
+<body>
+
+<form method="post" method="post" action="/register/">
+    {% csrf_token %}
+    <div id="heading">Register</div>
+    <div class="input-fields">
+        <span> Username</span>
+        <input class="fields" type="text" name="username" placeholder="Enter username">
+    </div>
+    <div class="input-fields">
+        <span> Email</span>
+        <input class="fields" id="Email" type="email" name="email" placeholder="Enter Email">
+    </div>
+    <div class="input-fields">
+        <span> Password</span>
+        <input class="fields" id="myInput" type="password" name="password" placeholder="Enter password">
+    </div>
+
+    <span id="span1"> <input type="submit" value="Register"/></span>
+
+</form>
+<p class="text-center">If you already have an account, <a href="/">login</a> instead.</p>
+
+<script>
+    function myFunction() {
+        var x = document.getElementById("myInput");
+        if (x.type === "password") {
+            x.type = "text";
+        } else {
+            x.type = "password";
+        }
+    }
+</script>
+
+</body>
+</html>

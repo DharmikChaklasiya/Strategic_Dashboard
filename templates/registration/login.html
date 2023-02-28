@@ -1,0 +1,48 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'assets/css/login.css' %}">
+    <title>LoginSystem</title>
+</head>
+<body>
+
+<form method="post" method="post" action="/">
+    {% csrf_token %}
+    <div id="heading">Login</div>
+    <div class="input-fields">
+        <span> Username</span>
+        <input class="fields" type="text" name="username" placeholder="Enter username">
+    </div>
+
+    <div class="input-fields">
+        <span> Password</span>
+        <input class="fields" id="myInput" type="password" name="password" placeholder="Enter password">
+    </div>
+    <input type="checkbox" onclick="myFunction()">Show Password
+    <br> <br>
+    {% if var %}
+        <h4>Invalid credentials</h4>
+        <p>Wrong username or password</p>
+    {% endif %}
+
+    <span id="span1"> <input type="submit" value="Login"/></span>
+
+</form>
+<p class="text-center">If you don't have an account, <a href="/register">Register</a> instead.</p>
+<script>
+    function myFunction() {
+        var x = document.getElementById("myInput");
+        if (x.type === "password") {
+            x.type = "text";
+        } else {
+            x.type = "password";
+        }
+    }
+</script>
+
+</body>
+</html>
