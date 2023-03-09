@@ -1,4 +1,7 @@
 {% extends "layouts/base.html" %}
+{% load removespaces %}
+{% load addspaces %}
+
 
 {% block title %} Dashboard {% endblock %}
 
@@ -7,7 +10,7 @@
 
 {% block content %}
 
-    <div class="content">
+    <div class="content" style="overflow: auto !important;">
         <div class="panel-header bg-light-gradient">
             <div class="page-inner py-5">
                 <div class="d-flex flex-row justify-content-between">
@@ -56,18 +59,22 @@
             </div>
         </div>
         {% for table in tables %}
-            <!-- {{ i|add:"1" }} -->
             <div class="container text-center border mb-3">
                 <table class="table">
                     <div class="d-flex flex-row justify-content-between">
                         <div>
                             <h3 class="lead mx-5">{{ table }}</h3>
                             <button class="btn btn-success mx-5 py-0 my-1" data-bs-toggle="modal"
-                                    data-bs-target="#{{ table }}{{ i }}">Edit
+                                    data-bs-target="#{{ table|addspaces }}{{ i }}">Edit
                             </button>
+                        <form method="post" action="deletetable">
+                            {% csrf_token %}
+                            <input id="oldName" type="text" name="tableoldname" class="form-control" value="{{ table }}" hidden>
+                            <button type="submit" class="btn btn-success mx-5 py-0 my-1">Delete</button>
+                        </form>
                         </div>
                         <!-- Modal -->
-                        <div class="modal fade" id="{{ table }}{{ i }}" tabindex="-1"
+                        <div class="modal fade" id="{{ table|addspaces }}{{ i }}" tabindex="-1"
                              aria-labelledby="exampleModalLabel" aria-hidden="true">
                             <div class="modal-dialog">
                                 <div class="modal-content">
@@ -79,7 +86,7 @@
                                         <div class="modal-body">
                                             <div class="col-md-12">
                                                 <input id="oldName" type="text" name="tableoldname" class="form-control"
-                                                       value={{ table }} hidden>
+                                                       value="{{ table }}" hidden>
                                             </div>
                                             <div class="col-md-12">
                                                 <label class="form-label" aria-disabled="true">New Name</label>
@@ -100,21 +107,21 @@
 
                         <div>
                             <button type="button" class="btn btn-success mx-5 my-1" data-bs-toggle="modal"
-                                    data-bs-target="#{{ table }}">Add
+                                    data-bs-target="#{{ table|addspaces }}">Add
                             </button>
                         </div>
-                        <div class="modal fade" id="{{ table }}" tabindex="-1" aria-labelledby="exampleModalLabel"
+                        <div class="modal fade" id="{{ table|addspaces }}" tabindex="-1" aria-labelledby="exampleModalLabel"
                              aria-hidden="true">
                             <div class="modal-dialog">
                                 <div class="modal-content">
                                     <div class="modal-header">
-                                        <h1 class="modal-title fs-5" id="exampleModalLabel">Add a table</h5>
+                                        <h1 class="modal-title fs-5" id="exampleModalLabel">Add a row</h5>
                                     </div>
                                     <form id="addrows" method="POST" action="addRows" class="row g-3 p-2">
                                         {% csrf_token %}
                                         <div class="modal-body">
                                             <input id="tablee" type="text" name="tablee" class="form-control"
-                                                   value={{ table }} hidden/>
+                                                   value="{{ table }}" hidden/>
 
                                             <div class="col-md-12">
                                                 <label class="form-label">Name</label>
@@ -123,33 +130,18 @@
                                             </div>
                                             <div class="col-md-12">
                                                 <label class="form-label">Datenquelle</label>
+                                                <div class="d-flex flex-row">
+                                                <div class="m-1">
+                                                <label class="form-label">Label</label>
                                                 <input id="Datenquelle" type="text" name="Datenquelle"
                                                        class="form-control" required/>
-                                            </div>
-                                            <div class="col-md-12">
-                                                <label class="form-label">Datum</label>
-                                                <input id="Datum" type="date" name="Datum" class="form-control"
-                                                       required/>
-                                            </div>
-                                            <div class="col-md-12">
-                                                <label class="form-label">Status</label>
-                                                <input id="Status" type="text" name="Status" class="form-control"
-                                                       required/>
-                                            </div>
-                                            <div class="col-md-12">
-                                                <label class="form-label">Wert</label>
-                                                <input id="Wert" type="number" name="Wert" class="form-control"
-                                                       required/>
-                                            </div>
-                                            <div class="col-md-12">
-                                                <label class="form-label">Top3</label>
-                                                <input id="Top3" type="number" name="Top3" class="form-control"
-                                                       required/>
-                                            </div>
-                                            <div class="col-md-12">
-                                                <label class="form-label">Durchschnitt</label>
-                                                <input id="Durchschnitt" type="number" name="Durchschnitt"
+                                                </div>
+                                                <div class="m-1">
+                                                    <label class="form-label">Code</label>
+                                                <input id="datasetCode" type="text" name="datasetcode"
                                                        class="form-control" required/>
+                                                </div>
+                                            </div>
                                             </div>
                                         </div>
                                         <div class="modal-footer">
@@ -163,7 +155,6 @@
                             </div>
                         </div>
                     </div>
-
                     <thead class="thead-light">
                     <tr>
                         <th scope="col">#</th>
@@ -178,11 +169,12 @@
                         <th scope="col">Delete</th>
                     </tr>
                     </thead>
+
                     <tbody>
                     {% for resul in result %}
-                        {% if resul.Tables == table %}
+                        {% if resul.Tables|removespaces == table|removespaces %}
                             <tr>
-                                <td>{{ resul.id }}</td>
+                                <td>{{ resul.id }}</td>         
                                 <td>{{ resul }}</td>
                                 <td>{{ resul.Datenquelle }}</td>
                                 <td>{{ resul.Datum }}</td>
@@ -191,8 +183,12 @@
                                 <td>{{ resul.Top3 }}</td>
                                 <td>{{ resul.EUDurchschnitt }}</td>
                                 <td>
+                                    <button class="btn btn-primary text-light"><a class="text-light" href="Krieslaufwirtschaft/{{resul.Code}}">View</a>
+                                    </button>
+                                </td>
+                                <td>
                                     <button class="btn btn-primary" data-bs-toggle="modal"
-                                            data-bs-target="#{{ resul }}">Edit
+                                            data-bs-target=#{{ resul }}>Edit
                                     </button>
                                 </td>
                                 <td>
@@ -200,12 +196,12 @@
                                             id="recordid" type="text" name="recordid" class="form-control"
                                             value={{ resul.id }} hidden/>
                                         <button class="btn btn-primary" data-bs-toggle="modal"
-                                                data-bs-target="#{{ resul }}{i}">Delete
+                                                data-bs-target=#{{ resul }}{i}>Delete
                                         </button>
                                     </form>
                                 </td>
                             </tr>
-                            <div class="modal fade" id="{{ resul }}" tabindex="-1" aria-labelledby="exampleModalLabel"
+                            <div class="modal fade" id={{ resul }} tabindex="-1" aria-labelledby="exampleModalLabel"
                                  aria-hidden="true">
                                 <div class="modal-dialog">
                                     <div class="modal-content">
@@ -221,12 +217,12 @@
                                                 <div class="col-md-12">
                                                     <label class="form-label">Name</label>
                                                     <input id="Teilindikator" type="text" name="Teilindikator"
-                                                           class="form-control" value={{ resul }} required/>
+                                                           class="form-control" value="{{ resul }}" required/>
                                                 </div>
                                                 <div class="col-md-12">
                                                     <label class="form-label">Datenquelle</label>
                                                     <input id="Datenquelle" type="text" name="Datenquelle"
-                                                           class="form-control" value={{ resul.Datenquelle }} required/>
+                                                           class="form-control" value="{{ resul.Datenquelle }}" required/>
                                                 </div>
                                                 <div class="col-md-12">
                                                     <label class="form-label">Datum</label>
@@ -236,12 +232,12 @@
                                                 <div class="col-md-12">
                                                     <label class="form-label">Status</label>
                                                     <input id="Status" type="text" name="Status" class="form-control"
-                                                           value={{ resul.Status }} required/>
+                                                           value="{{ resul.Status }}" required/>
                                                 </div>
                                                 <div class="col-md-12">
                                                     <label class="form-label">Wert</label>
                                                     <input id="Wert" type="number" name="Wert" class="form-control"
-                                                           value={{ resul.Wert }} required/>
+                                                           value="{{ resul.Wert }}" required/>
                                                 </div>
                                                 <div class="col-md-12">
                                                     <label class="form-label">Top3</label>
@@ -265,6 +261,7 @@
                                     </div>
                                 </div>
                             </div>
+
                             </div>
                         {% endif %}
                     {% endfor %}
@@ -272,6 +269,25 @@
             </table>
             </div>
         {% endfor %}</div>
+        {% if checking == "yes" %}
+        <div id="tableofdata" class="modal d-block w-100" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-scrollable" role="document">
+                                  <div class="modal-content">
+                                    <div class="modal-header">
+                                      <h5 class="modal-title">Data</h5>
+                                      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                       <a href="/dashboard/Krieslaufwirtschaft"> <span aria-hidden="true">Close &times;</span></a>
+                                      </button>
+                                    </div>
+                                    <div class="modal-body" style="height: 600px; overflow-y: auto;">
+                                        <div class="table-responsive">{% block table %}{% endblock table %}</div>
+                                        
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                            {% endif %}
 {% endblock content %}
 
 <!-- Specific Page JS goes HERE  -->

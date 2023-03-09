@@ -66,6 +66,11 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
             ],
+            'libraries':{
+            'my_templatetag': 'FTI_Monitor.templatetags.removespaces',
+            'my_templateta': 'FTI_Monitor.templatetags.addspaces',
+            
+            }
         },
     },
 ]
