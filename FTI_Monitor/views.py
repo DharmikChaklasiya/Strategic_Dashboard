@@ -39,6 +39,9 @@ def addRows(request):
             else:
                 filteredAT=data.loc[data['geo\\TIME_PERIOD'] == "AT"]
                 filteredATLastcolumn=filteredAT.iloc[0,len(filteredAT.columns)-1]
+                print(filteredATLastcolumn)
+                if filteredATLastcolumn.isnull():
+                     filteredATLastcolumn="NaN"
                 lastcol=data.columns[len(data.columns)-1]
                 lastcolumndf=data.sort_values(by=[lastcol],ascending=False)
                 top3=lastcolumndf.head(3)
@@ -49,7 +52,12 @@ def addRows(request):
                 # Filter the DataFrame to only include European countries
                 df = data.loc[data['geo\TIME_PERIOD'].isin(european_countries)]
                 lastcolname=df.columns[len(data.columns)-1]
-                totalavg=df[[lastcolname]].mean()
+                columns=df[[lastcolname]]
+                rowwithNAN = len(df[df[lastcolname].isna()])
+                length=len(df[[lastcolname]])
+                length=length-rowwithNAN
+                addition=df[[lastcolname]].sum()
+                average=addition/length
 
                 url = f"https://ec.europa.eu/eurostat/api/dissemination/sdmx/2.1/dataflow/ESTAT/{datasetcode}"
 
@@ -59,27 +67,37 @@ def addRows(request):
                 #print(resp)
                 root = ET.fromstring(resp.content)
 
-
+                global update_data
                 # Extract the metadata fields you are interested in
                 for annotation in root.findall(".//{http://www.sdmx.org/resources/sdmxml/schemas/v2_1/common}Annotation"):
                     if annotation.find("{http://www.sdmx.org/resources/sdmxml/schemas/v2_1/common}AnnotationType").text == "UPDATE_DATA":
                         update_data = annotation.find("{http://www.sdmx.org/resources/sdmxml/schemas/v2_1/common}AnnotationTitle").text
                         print("UPDATE_DATA:",update_data)
+                        
+                instance=Rows(
+                Tables=Tabless.objects.get(name=strreplace),
+                Teilindikator=strreplaceTelli,
+                Datenquelle=request.POST.get('Datenquelle'),
+                Code=request.POST.get('datasetcode'),
+                Datum=update_data,
+                Wert=filteredATLastcolumn,
+                Top3=topavg,
+                EUDurchschnitt=average
+                )
+                instance.save()
         except Exception:
                 print("Exception")
-                
-        instance=Rows(
-            Tables=Tabless.objects.get(name=strreplace),
-            Teilindikator=strreplaceTelli,
-            Datenquelle=request.POST.get('Datenquelle'),
-            Code=request.POST.get('datasetcode'),
-            Datum=update_data,
-            Wert=filteredATLastcolumn,
-            Top3=topavg,
-            EUDurchschnitt=totalavg
-        )
-        instance.save()
-
+                instance=Rows(
+                Tables=Tabless.objects.get(name=strreplace),
+                Teilindikator=strreplaceTelli,
+                Datenquelle=request.POST.get('Datenquelle'),
+                Code=request.POST.get('datasetcode'),
+                Datum=None,
+                Wert=None,
+                Top3=None,
+                EUDurchschnitt=None
+                )
+                instance.save()
         
     return redirect(dashpage)
 

@@ -16,7 +16,7 @@ class Rows(models.Model):
     Code= models.CharField(max_length=500, blank=True, null=True)
     Datum = models.DateTimeField(blank=True, null=True)
     Status = models.CharField(max_length=500, default="Active")
-    Wert = models.IntegerField(null=True, blank=True)
+    Wert = models.CharField(null=True, blank=True,max_length=500)
     Top3 = models.IntegerField(null=True, blank=True)
     EUDurchschnitt = models.IntegerField(null=True, blank=True)
 

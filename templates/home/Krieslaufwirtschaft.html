@@ -6,11 +6,15 @@
 {% block title %} Dashboard {% endblock %}
 
 <!-- Specific Page CSS goes HERE  -->
-{% block stylesheets %}{% endblock stylesheets %}
+{% block stylesheets %}
+<style>
+
+</style>
+{% endblock stylesheets %}
 
 {% block content %}
 
-    <div class="content" style="overflow: auto !important;">
+    <div class="content" style="overflow: scroll !important;">
         <div class="panel-header bg-light-gradient">
             <div class="page-inner py-5">
                 <div class="d-flex flex-row justify-content-between">
@@ -60,19 +64,21 @@
         </div>
         {% for table in tables %}
             <div class="container text-center border mb-3">
-                <table class="table">
+                <table class="table table-responsive">
                     <div class="d-flex flex-row justify-content-between">
-                        <div>
+                        <div class="d-flex flex-row" style="margin: 0px !important; padding: 0px !important;">
                             <h3 class="lead mx-5">{{ table }}</h3>
-                            <button class="btn btn-success mx-5 py-0 my-1" data-bs-toggle="modal"
-                                    data-bs-target="#{{ table|addspaces }}{{ i }}">Edit
-                            </button>
-                        <form method="post" action="deletetable">
-                            {% csrf_token %}
-                            <input id="oldName" type="text" name="tableoldname" class="form-control" value="{{ table }}" hidden>
-                            <button type="submit" class="btn btn-success mx-5 py-0 my-1">Delete</button>
-                        </form>
+                            
+                            
                         </div>
+                        <button class="btn btn-success mx-5 py-0 my-1" data-bs-toggle="modal"
+                                    data-bs-target="#{{ table|addspaces }}{{ i }}">Edit
+                        </button>
+                        <form method="post" action="deletetable">
+                                {% csrf_token %}
+                                <input id="oldName" type="text" name="tableoldname" class="form-control" value="{{ table }}" hidden>
+                                <button type="submit" class="btn btn-success mx-5 py-0 my-1">Delete</button>
+                        </form>
                         <!-- Modal -->
                         <div class="modal fade" id="{{ table|addspaces }}{{ i }}" tabindex="-1"
                              aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -165,8 +171,9 @@
                         <th scope="col">Wert</th>
                         <th scope="col">Top-3</th>
                         <th scope="col">EU Durchschnitt</th>
-                        <th scope="col">Edit</th>
-                        <th scope="col">Delete</th>
+                        <th scope="col"></th>
+                        <th scope="col"></th>
+                        <th scope="col"></th>
                     </tr>
                     </thead>
 
@@ -183,12 +190,12 @@
                                 <td>{{ resul.Top3 }}</td>
                                 <td>{{ resul.EUDurchschnitt }}</td>
                                 <td>
-                                    <button class="btn btn-primary text-light"><a class="text-light" href="Krieslaufwirtschaft/{{resul.Code}}">View</a>
+                                    <button class="btn btn-primary text-light"><a class="text-light" href="Krieslaufwirtschaft/{{resul.Code}}"><i class="bi bi-eye"></i></a>
                                     </button>
                                 </td>
                                 <td>
                                     <button class="btn btn-primary" data-bs-toggle="modal"
-                                            data-bs-target=#{{ resul }}>Edit
+                                            data-bs-target=#{{ resul }}><i class="bi bi-pencil-fill"></i>
                                     </button>
                                 </td>
                                 <td>
@@ -196,7 +203,7 @@
                                             id="recordid" type="text" name="recordid" class="form-control"
                                             value={{ resul.id }} hidden/>
                                         <button class="btn btn-primary" data-bs-toggle="modal"
-                                                data-bs-target=#{{ resul }}{i}>Delete
+                                                data-bs-target=#{{ resul }}{i}><i class="bi bi-trash-fill"></i>
                                         </button>
                                     </form>
                                 </td>
