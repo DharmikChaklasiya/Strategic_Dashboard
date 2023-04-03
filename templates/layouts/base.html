@@ -31,21 +31,24 @@
 	<link rel="stylesheet" href="/static/assets/css/bootstrap.min.css">
 	<link rel="stylesheet" href="/static/assets/css/atlantis.css">
 
-	<!-- CSS Just for demo purpose, don't include it in your project -->
-	<link rel="stylesheet" href="/static/assets/css/demo.css">
-
+<style>
+	@media only screen and (max-width: 991px) {
+		.sidebar {
+			transform: translate3d(0px, 0, 0) !important;;
+		}
+	  }</style>
     <!-- Specific Page CSS goes HERE  -->
     {% block stylesheets %}{% endblock stylesheets %}
 
 </head>
 <body data-background-color="light2">
 	<div class="wrapper">
-
+		{% include 'includes/messages.html' %}
         {% include 'includes/navigation.html' %}
 
         {% include 'includes/sidebar.html' %}
 
-		<div class="main-panel">
+		<div class="main-panel" style="margin-left: auto; margin-right: auto; height: fit-content;">
 			
 			{% block content %}{% endblock content %}
 
@@ -56,6 +59,7 @@
 {% include 'includes/scripts.html' %}
     <!-- Specific Page JS goes HERE  -->
     {% block javascripts %}
+
 	{% endblock javascripts %}
 
 </body>

@@ -10,6 +10,7 @@ import eurostat
 import pandas as pd
 import requests
 import xml.etree.ElementTree as ET
+from django.contrib import messages
 
 
 @login_required(login_url='/')
@@ -26,22 +27,17 @@ def addTable(request):
         instance.save()
     return redirect(dashpage)
 
-def addRows(request):
-    if request.method=="POST":
-        strreplace=request.POST.get('tablee').replace(" ","_")
-        strreplaceTelli=request.POST.get('Teilindikator').replace(" ","_")
-        datasetcode=request.POST.get('datasetcode')
+def add(request,strreplace,strreplaceTelli,datasetcode,id):
         try:
             data = eurostat.get_data_df(datasetcode)
+            print(data)
             if data.empty:
-                print('Data not available')
+                messages.error(request, "Data Not available OR Invalid Input")
                 redirect(dashpage)
             else:
                 filteredAT=data.loc[data['geo\\TIME_PERIOD'] == "AT"]
                 filteredATLastcolumn=filteredAT.iloc[0,len(filteredAT.columns)-1]
                 print(filteredATLastcolumn)
-                if filteredATLastcolumn.isnull():
-                     filteredATLastcolumn="NaN"
                 lastcol=data.columns[len(data.columns)-1]
                 lastcolumndf=data.sort_values(by=[lastcol],ascending=False)
                 top3=lastcolumndf.head(3)
@@ -58,6 +54,7 @@ def addRows(request):
                 length=length-rowwithNAN
                 addition=df[[lastcolname]].sum()
                 average=addition/length
+                print(average)
 
                 url = f"https://ec.europa.eu/eurostat/api/dissemination/sdmx/2.1/dataflow/ESTAT/{datasetcode}"
 
@@ -72,33 +69,143 @@ def addRows(request):
                 for annotation in root.findall(".//{http://www.sdmx.org/resources/sdmxml/schemas/v2_1/common}Annotation"):
                     if annotation.find("{http://www.sdmx.org/resources/sdmxml/schemas/v2_1/common}AnnotationType").text == "UPDATE_DATA":
                         update_data = annotation.find("{http://www.sdmx.org/resources/sdmxml/schemas/v2_1/common}AnnotationTitle").text
-                        print("UPDATE_DATA:",update_data)
-                        
-                instance=Rows(
-                Tables=Tabless.objects.get(name=strreplace),
-                Teilindikator=strreplaceTelli,
-                Datenquelle=request.POST.get('Datenquelle'),
-                Code=request.POST.get('datasetcode'),
-                Datum=update_data,
-                Wert=filteredATLastcolumn,
-                Top3=topavg,
-                EUDurchschnitt=average
-                )
-                instance.save()
+                        update_data=update_data.split("T")
+                        update_data=update_data[0]
+                        print(update_data)
+
+                if update_data==None:
+                    if id == None:
+                        instance=Rows(
+                        Tables=Tabless.objects.get(name=strreplace),
+                        Teilindikator=strreplaceTelli,
+                        Datenquelle=request.POST.get('Datenquelle'),
+                        Code=request.POST.get('datasetcode'),
+                        Datum=None,
+                        Wert=filteredATLastcolumn,
+                        Top3=topavg,
+                        EUDurchschnitt=average
+                        )
+                        instance.save()
+                    else:
+                        instance=Rows.objects.get(id=request.POST.get('recordid'))
+                        instance.Teilindikator=strreplaceTelli,
+                        instance.Datenquelle=request.POST.get('Datenquelle'),
+                        instance.Code=request.POST.get('datasetcode'),
+                        instance.Datum=None,
+                        instance.Wert=filteredATLastcolumn,
+                        instance.Top3=topavg,
+                        instance.EUDurchschnitt=average
+                        instance.save()
+                    print(id)
+                if id == None:
+                        instance=Rows(
+                        Tables=Tabless.objects.get(name=strreplace),
+                        Teilindikator=strreplaceTelli,
+                        Datenquelle=request.POST.get('Datenquelle'),
+                        Code=request.POST.get('datasetcode'),
+                        Datum=update_data,
+                        Wert=filteredATLastcolumn,
+                        Top3=topavg,
+                        EUDurchschnitt=average
+                        )
+                        instance.save()
+                else:
+                        instance=Rows.objects.get(id=id)
+                        instance.Tables=Tabless.objects.get(name=strreplace)
+                        instance.Teilindikator=strreplaceTelli
+                        instance.Datenquelle=request.POST.get('Datenquelle')
+                        instance.Code=datasetcode
+                        instance.Datum=update_data
+                        instance.Wert=filteredATLastcolumn
+                        instance.Top3=topavg
+                        instance.EUDurchschnitt=average
+                        instance.save()
+                messages.success(request, "Record added successfully." )
         except Exception:
                 print("Exception")
-                instance=Rows(
-                Tables=Tabless.objects.get(name=strreplace),
-                Teilindikator=strreplaceTelli,
-                Datenquelle=request.POST.get('Datenquelle'),
-                Code=request.POST.get('datasetcode'),
-                Datum=None,
-                Wert=None,
-                Top3=None,
-                EUDurchschnitt=None
-                )
-                instance.save()
-        
+                messages.error(request, "Data Not available OR Invalid Input")
+
+
+def addRows(request):
+    if request.method=="POST":
+        strreplace=request.POST.get('tablee')
+        strreplaceTelli=request.POST.get('Teilindikator')
+        datasetcode=request.POST.get('datasetcode')
+        id=None
+        add(request,strreplace,strreplaceTelli,datasetcode,id)
+        # try:
+        #     data = eurostat.get_data_df(datasetcode)
+        #     print(data)
+        #     if data.empty:
+        #         messages.error(request, "Data Not available OR Invalid Input")
+        #         redirect(dashpage)
+        #     else:
+        #         filteredAT=data.loc[data['geo\\TIME_PERIOD'] == "AT"]
+        #         filteredATLastcolumn=filteredAT.iloc[0,len(filteredAT.columns)-1]
+        #         print(filteredATLastcolumn)
+        #         lastcol=data.columns[len(data.columns)-1]
+        #         lastcolumndf=data.sort_values(by=[lastcol],ascending=False)
+        #         top3=lastcolumndf.head(3)
+        #         topavg=top3[[lastcol]].mean()
+        #         # Define a list of European country codes
+        #         european_countries = ["AT", "BE", "BG", "CY", "CZ", "DE", "DK", "EE", "ES", "FI", "FR", "GR", "HR", "HU", "IE", "IT", "LT", "LU", "LV", "MT", "NL", "PL", "PT", "RO", "SE", "SI", "SK"]
+
+        #         # Filter the DataFrame to only include European countries
+        #         df = data.loc[data['geo\TIME_PERIOD'].isin(european_countries)]
+        #         lastcolname=df.columns[len(data.columns)-1]
+        #         columns=df[[lastcolname]]
+        #         rowwithNAN = len(df[df[lastcolname].isna()])
+        #         length=len(df[[lastcolname]])
+        #         length=length-rowwithNAN
+        #         addition=df[[lastcolname]].sum()
+        #         average=addition/length
+        #         print(average)
+
+        #         url = f"https://ec.europa.eu/eurostat/api/dissemination/sdmx/2.1/dataflow/ESTAT/{datasetcode}"
+
+
+        #         resp = requests.get(url)
+
+        #         #print(resp)
+        #         root = ET.fromstring(resp.content)
+
+        #         global update_data
+        #         # Extract the metadata fields you are interested in
+        #         for annotation in root.findall(".//{http://www.sdmx.org/resources/sdmxml/schemas/v2_1/common}Annotation"):
+        #             if annotation.find("{http://www.sdmx.org/resources/sdmxml/schemas/v2_1/common}AnnotationType").text == "UPDATE_DATA":
+        #                 update_data = annotation.find("{http://www.sdmx.org/resources/sdmxml/schemas/v2_1/common}AnnotationTitle").text
+        #                 update_data=update_data.split("T")
+        #                 update_data=update_data[0]
+        #                 print(update_data)
+
+        #         if update_data==None:
+        #             instance=Rows(
+        #             Tables=Tabless.objects.get(name=strreplace),
+        #             Teilindikator=strreplaceTelli,
+        #             Datenquelle=request.POST.get('Datenquelle'),
+        #             Code=request.POST.get('datasetcode'),
+        #             Datum=None,
+        #             Wert=filteredATLastcolumn,
+        #             Top3=topavg,
+        #             EUDurchschnitt=average
+        #             )
+        #             instance.save()
+
+        #         instance=Rows(
+        #         Tables=Tabless.objects.get(name=strreplace),
+        #         Teilindikator=strreplaceTelli,
+        #         Datenquelle=request.POST.get('Datenquelle'),
+        #         Code=request.POST.get('datasetcode'),
+        #         Datum=update_data,
+        #         Wert=filteredATLastcolumn,
+        #         Top3=topavg,
+        #         EUDurchschnitt=average
+        #         )
+        #         instance.save()
+        #         messages.success(request, "Record added successfully." )
+        # except Exception:
+        #         print("Exception")
+        #         messages.error(request, "Data Not available OR Invalid Input")
     return redirect(dashpage)
 
 def dashpage(request):
@@ -108,6 +215,23 @@ def dashpage(request):
     result=Rows.objects.all()
     for res in result:
         res.Teilindikator=res.Teilindikator.replace("_"," ")
+        url = f"https://ec.europa.eu/eurostat/api/dissemination/sdmx/2.1/dataflow/ESTAT/{res.Code}"
+        resp = requests.get(url)
+
+        #print(resp)
+        root = ET.fromstring(resp.content)
+
+        global update_data
+        # Extract the metadata fields you are interested in
+        for annotation in root.findall(".//{http://www.sdmx.org/resources/sdmxml/schemas/v2_1/common}Annotation"):
+            if annotation.find("{http://www.sdmx.org/resources/sdmxml/schemas/v2_1/common}AnnotationType").text == "UPDATE_DATA":
+                update_data = annotation.find("{http://www.sdmx.org/resources/sdmxml/schemas/v2_1/common}AnnotationTitle").text
+                update_data=update_data.split("T")
+                update_data=update_data[0]
+                print(update_data)
+        if str(update_data) != str(res.Datum):
+             res.Status="Update available"
+             
     return render(request,'home/Krieslaufwirtschaft.html',{"tables":tables, "result":result,"i":0})
 
 def editTable(request):
@@ -131,16 +255,23 @@ def editTable(request):
 def editrows(request):
     print(request.POST.get('Datum'))
     if request.method=="POST":
-        stringswithoutspaces=request.POST.get('Teilindikator').replace(" ","_")
-        instance=Rows.objects.get(id=request.POST.get('recordid'))
-        instance.Teilindikator=stringswithoutspaces
-        instance.Datenquelle=request.POST.get('Datenquelle')
-        instance.Datum=request.POST.get('Datum')
-        instance.Status=request.POST.get('Status')
-        instance.Wert=request.POST.get('Wert')
-        instance.Top3=request.POST.get('Top3')
-        instance.EUDurchschnitt=request.POST.get('Durchschnitt')
-        instance.save()
+        # strreplace=request.POST.get('tablee').replace(" ","_")
+        # stringswithoutspaces=request.POST.get('Teilindikator').replace(" ","_")
+        # instance=Rows.objects.get(id=request.POST.get('recordid'))
+        # instance.Teilindikator=stringswithoutspaces
+        # instance.Datenquelle=request.POST.get('Datenquelle')
+        # instance.Code=request.POST.get('Code')
+        id=request.POST.get('recordid')
+        strreplace=request.POST.get('tablee')
+        strreplaceTelli=request.POST.get('Teilindikator')
+        datasetcode=request.POST.get('Code')
+        print(datasetcode)
+        add(request,strreplace,strreplaceTelli,datasetcode,id)
+        # instance.Datum=request.POST.get('Datum')
+        # instance.Status=request.POST.get('Status')
+        # instance.Wert=request.POST.get('Wert')
+        # instance.Top3=request.POST.get('Top3')
+        # instance.EUDurchschnitt=request.POST.get('Durchschnitt'
     return redirect(dashpage)
 
 def deleterows(request):
@@ -170,7 +301,10 @@ def displaydata(request,slug):
                 print('Data not available')
                 redirect(dashpage)
             else:
-                 tableHtml=data.to_html(classes='table table-stripped')
+                 data=data.drop(['freq', 'unit'], axis=1)
+                 if 'wst_oper' in data.columns:
+                      data=data.drop(['wst_oper'], axis=1)
+                 tableHtml=data.to_html(classes='table table-stripped text-secondary')
                 
     except Exception:
                 print("Exception")
@@ -182,14 +316,14 @@ def displaydata(request,slug):
 
             with open('templates/home/table.html', 'a', encoding='utf-8') as file_handler:
                 file_handler.writelines(tableHtml)
+                # file_handler.writelines("<script>window.onload = function exampleFunction() {  document.getElementById('sidebar').style.display='none';  }</script>")
 
             # with open('templates/home/table.html', 'a', encoding='utf-8') as file_handler:
-            #     file_handler.writelines("<script>$(document).ready(function(){$('#dataoftable').modal('show');});</script>")
+            #     file_handler.writelines("<script>window.onload = function exampleFunction() {  document.getElementById('sidebar').style.display='none';  }</script>")
 
             with open('templates/home/table.html', 'a') as file_handler:
                 file_handler.writelines("{% endblock %}")
-                await asyncio.sleep(1.2)
+                # await asyncio.sleep(5)
 
     asyncio.run(main())
-    print("fdjasdlgjdflgldfdk")
     return render(request,'home/table.html',{"tables":tables, "result":result,"i":0,"checking":"yes"})

@@ -12,7 +12,16 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 
 from pathlib import Path
 import os
+from django.contrib.messages import constants as messages
 
+
+MESSAGE_TAGS = {
+        messages.DEBUG: 'alert-secondary bg-secondary',
+        messages.INFO: 'alert-info bg-info',
+        messages.SUCCESS: 'alert-success bg-success',
+        messages.WARNING: 'alert-warning bg-warning',
+        messages.ERROR: 'alert-danger bg-danger',
+ }
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 

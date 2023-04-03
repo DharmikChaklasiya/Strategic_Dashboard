@@ -14,7 +14,7 @@ class Rows(models.Model):
     Teilindikator = models.CharField(max_length=500, blank=True, null=True)
     Datenquelle = models.CharField(max_length=500, blank=True, null=True)
     Code= models.CharField(max_length=500, blank=True, null=True)
-    Datum = models.DateTimeField(blank=True, null=True)
+    Datum = models.DateField(blank=True, null=True)
     Status = models.CharField(max_length=500, default="Active")
     Wert = models.CharField(null=True, blank=True,max_length=500)
     Top3 = models.IntegerField(null=True, blank=True)

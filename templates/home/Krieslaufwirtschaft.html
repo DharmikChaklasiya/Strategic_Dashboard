@@ -8,15 +8,55 @@
 <!-- Specific Page CSS goes HERE  -->
 {% block stylesheets %}
 <style>
+   .thead-light td{
+margin: 0 !important;
+    }
+    #textsmaller td{
+        font-size: small !important;
+        min-width:fit-content;
+    }
+.Container{
+            height: inherit;
+            width: inherit;
+            overflow-y: auto;
+            background-color: #E9F1F7;
+            border-radius: 5px;
+            margin: 0 auto;
+        }
+         
+        .Content{
+            width: 540px;
+            color: white;
+            text-align: center;
+        }
+         
+        
+        /* ::-webkit-scrollbar {
+            width: 3px;
+        }
 
+        ::-webkit-scrollbar-track {
+            background: gainsboro;
+            border-radius: 5px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: black;
+            border-radius: 5px;
+        }
+     
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        } */
 </style>
 {% endblock stylesheets %}
 
 {% block content %}
 
-    <div class="content" style="overflow: scroll !important;">
+    <div class="m-5">
         <div class="panel-header bg-light-gradient">
-            <div class="page-inner py-5">
+            <div class="page-inner py-3">
                 <div class="d-flex flex-row justify-content-between">
                     <div class="d-flex align-items-left align-items-md-center flex-column flex-md-row">
                         <div>
@@ -63,21 +103,22 @@
             </div>
         </div>
         {% for table in tables %}
-            <div class="container text-center border mb-3">
-                <table class="table table-responsive">
+            <div class="fluid-container text-center border m-3">
+                <table class="table table-responsive" style="overflow-x:overlay;">
                     <div class="d-flex flex-row justify-content-between">
                         <div class="d-flex flex-row" style="margin: 0px !important; padding: 0px !important;">
                             <h3 class="lead mx-5">{{ table }}</h3>
                             
                             
                         </div>
-                        <button class="btn btn-success mx-5 py-0 my-1" data-bs-toggle="modal"
+                        <div class="d-flex">
+                        <button class="btn btn-success mx-2 py-0 my-1 px-3" data-bs-toggle="modal"
                                     data-bs-target="#{{ table|addspaces }}{{ i }}">Edit
                         </button>
                         <form method="post" action="deletetable">
                                 {% csrf_token %}
                                 <input id="oldName" type="text" name="tableoldname" class="form-control" value="{{ table }}" hidden>
-                                <button type="submit" class="btn btn-success mx-5 py-0 my-1">Delete</button>
+                                <button type="submit" class="btn btn-success mx-2 py-0 my-1 px-3" onclick="return confirm('Are you sure?');">Delete</button>
                         </form>
                         <!-- Modal -->
                         <div class="modal fade" id="{{ table|addspaces }}{{ i }}" tabindex="-1"
@@ -112,10 +153,11 @@
                         </div>
 
                         <div>
-                            <button type="button" class="btn btn-success mx-5 my-1" data-bs-toggle="modal"
+                            <button type="button" class="btn btn-success mx-2 my-1 px-3" data-bs-toggle="modal"
                                     data-bs-target="#{{ table|addspaces }}">Add
                             </button>
                         </div>
+                    </div>
                         <div class="modal fade" id="{{ table|addspaces }}" tabindex="-1" aria-labelledby="exampleModalLabel"
                              aria-hidden="true">
                             <div class="modal-dialog">
@@ -137,11 +179,21 @@
                                             <div class="col-md-12">
                                                 <label class="form-label">Datenquelle</label>
                                                 <div class="d-flex flex-row">
-                                                <div class="m-1">
+                                                <!-- <div class="m-1">
                                                 <label class="form-label">Label</label>
                                                 <input id="Datenquelle" type="text" name="Datenquelle"
                                                        class="form-control" required/>
-                                                </div>
+                                                </div> -->
+                                                <div class="m-1 mt-4">
+                                                    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                        <span id="selected">Select Label</span>
+                                                    </button>
+                                                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                                      <a class="dropdown-item" href="#">Eurostat</a>
+                                                      <a class="dropdown-item" href="#">World Bank</a>
+                                                      <a class="dropdown-item" href="#">OECD</a>
+                                                    </div>
+                                                  </div>
                                                 <div class="m-1">
                                                     <label class="form-label">Code</label>
                                                 <input id="datasetCode" type="text" name="datasetcode"
@@ -172,12 +224,12 @@
                         <th scope="col">Top-3</th>
                         <th scope="col">EU Durchschnitt</th>
                         <th scope="col"></th>
-                        <th scope="col"></th>
-                        <th scope="col"></th>
+                        <!-- <th scope="col"></th>
+                        <th scope="col"></th> -->
                     </tr>
                     </thead>
 
-                    <tbody>
+                    <tbody id="textsmaller">
                     {% for resul in result %}
                         {% if resul.Tables|removespaces == table|removespaces %}
                             <tr>
@@ -185,15 +237,27 @@
                                 <td>{{ resul }}</td>
                                 <td>{{ resul.Datenquelle }}</td>
                                 <td>{{ resul.Datum }}</td>
-                                <td>{{ resul.Status }}</td>
+                                <td style="color: green;font-weight: bolder;">{{ resul.Status }}</td>
                                 <td>{{ resul.Wert }}</td>
                                 <td>{{ resul.Top3 }}</td>
                                 <td>{{ resul.EUDurchschnitt }}</td>
-                                <td>
+                                <td class="d-flex m-0">
+                                    <div class="m-1">
                                     <button class="btn btn-primary text-light"><a class="text-light" href="Krieslaufwirtschaft/{{resul.Code}}"><i class="bi bi-eye"></i></a>
+                                    </button></div>
+                                    <div class="m-1">
+                                    <button class="btn btn-primary" data-bs-toggle="modal"
+                                            data-bs-target=#{{ resul }}><i class="bi bi-pencil-fill"></i>
+                                    </button></div>
+                                    <form class="m-1" id="deleteRows" method="post" action="deleterows">{% csrf_token %}<input
+                                        id="recordid" type="text" name="recordid" class="form-control"
+                                        value={{ resul.id }} hidden/>
+                                    <button class="btn btn-primary" data-bs-toggle="modal" onclick="return confirm('Are you sure?');"
+                                            data-bs-target=#{{ resul }}{i}><i class="bi bi-trash-fill"></i>
                                     </button>
+                                </form>
                                 </td>
-                                <td>
+                                <!-- <td>
                                     <button class="btn btn-primary" data-bs-toggle="modal"
                                             data-bs-target=#{{ resul }}><i class="bi bi-pencil-fill"></i>
                                     </button>
@@ -202,11 +266,11 @@
                                     <form id="deleteRows" method="post" action="deleterows">{% csrf_token %}<input
                                             id="recordid" type="text" name="recordid" class="form-control"
                                             value={{ resul.id }} hidden/>
-                                        <button class="btn btn-primary" data-bs-toggle="modal"
+                                        <button class="btn btn-primary" data-bs-toggle="modal" onclick="return confirm('Are you sure?');"
                                                 data-bs-target=#{{ resul }}{i}><i class="bi bi-trash-fill"></i>
                                         </button>
                                     </form>
-                                </td>
+                                </td> -->
                             </tr>
                             <div class="modal fade" id={{ resul }} tabindex="-1" aria-labelledby="exampleModalLabel"
                                  aria-hidden="true">
@@ -220,6 +284,8 @@
                                             <div class="modal-body">
                                                 <input id="recordid" type="text" name="recordid" class="form-control"
                                                        value={{ resul.id }} hidden/>
+                                                <input id="tablee" type="text" name="tablee" class="form-control"
+                                                value="{{ table }}" hidden/>
 
                                                 <div class="col-md-12">
                                                     <label class="form-label">Name</label>
@@ -232,31 +298,11 @@
                                                            class="form-control" value="{{ resul.Datenquelle }}" required/>
                                                 </div>
                                                 <div class="col-md-12">
-                                                    <label class="form-label">Datum</label>
-                                                    <input id="Datum" type="date" name="Datum" class="form-control"
-                                                           value='{{ resul.Datum|date:"Y-m-d" }}' required/>
+                                                    <label class="form-label">Code</label>
+                                                    <input id="Code" type="text" name="Code"
+                                                           class="form-control" value="{{ resul.Code }}" required/>
                                                 </div>
-                                                <div class="col-md-12">
-                                                    <label class="form-label">Status</label>
-                                                    <input id="Status" type="text" name="Status" class="form-control"
-                                                           value="{{ resul.Status }}" required/>
-                                                </div>
-                                                <div class="col-md-12">
-                                                    <label class="form-label">Wert</label>
-                                                    <input id="Wert" type="number" name="Wert" class="form-control"
-                                                           value="{{ resul.Wert }}" required/>
-                                                </div>
-                                                <div class="col-md-12">
-                                                    <label class="form-label">Top3</label>
-                                                    <input id="Top3" type="number" name="Top3" class="form-control"
-                                                           value={{ resul.Top3 }} required/>
-                                                </div>
-                                                <div class="col-md-12">
-                                                    <label class="form-label">Durchschnitt</label>
-                                                    <input id="Durchschnitt" type="number" name="Durchschnitt"
-                                                           class="form-control"
-                                                           value={{ resul.EUDurchschnitt }} required/>
-                                                </div>
+                                                
                                             </div>
                                             <div class="modal-footer">
                                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
@@ -275,30 +321,35 @@
             </tbody>
             </table>
             </div>
-        {% endfor %}</div>
+        {% endfor %}</div></div>
+                        </div>
         {% if checking == "yes" %}
-        <div id="tableofdata" class="modal d-block w-100" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div id="tableofdata" class="modal d-block" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
                                 <div class="modal-dialog modal-dialog-scrollable" role="document">
-                                  <div class="modal-content">
+                                  <div class="modal-content" style="background-color: #E9F1F7; width: 700px; margin-left: auto; margin-right: auto;">
                                     <div class="modal-header">
                                       <h5 class="modal-title">Data</h5>
                                       <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                       <a href="/dashboard/Krieslaufwirtschaft"> <span aria-hidden="true">Close &times;</span></a>
+                                       <a style="color: black;" href="/dashboard/Krieslaufwirtschaft"> <span aria-hidden="true">Close &times;</span></a>
                                       </button>
                                     </div>
-                                    <div class="modal-body" style="height: 600px; overflow-y: auto;">
-                                        <div class="table-responsive">{% block table %}{% endblock table %}</div>
-                                        
+                                    <div class="modal-body m-3" style="height: 570px;">
+<div class="Container">
+                                        <div class="Content">{% block table %}{% endblock table %}</div>
+                                        </div>
                                     </div>
                                   </div>
                                 </div>
                               </div>
-                            </div>
+                            
                             {% endif %}
 {% endblock content %}
 
 <!-- Specific Page JS goes HERE  -->
 {% block javascripts %}
-
-
+<script>
+$('.dropdown-menu a').click(function(){
+    $('#selected').text($(this).text());
+  });
+</script>
 {% endblock javascripts %}

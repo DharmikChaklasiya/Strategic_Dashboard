@@ -1,8 +1,8 @@
 		<!-- Sidebar -->
-		<div class="sidebar sidebar-style-2" data-background-color="light2">	
-			<div class="sidebar-wrapper scrollbar scrollbar-inner">
-				<div class="sidebar-content">
-
+		<style>
+		</style>
+		<div class="d-flex">
+		<div class="sidebar collapse collapse-vertical show border-end" id="sidebar" data-background-color="light2" style="position: relative;">	
 					
 					<ul class="nav nav-primary">
 						<li class="nav-item {% if 'index' in segment %} active {% endif %}">
@@ -18,7 +18,7 @@
 						<li class="nav-item {% if 'ui-' in segment %} active {% endif %}">
 							<a data-toggle="collapse" href="#base">
 								
-								<p>FTI-RAHMENBEDINGUNGEN</p>
+									<p>FTI-RAHMENBEDINGUNGEN</p>
 								<span class="caret"></span>
 							</a>
 							<div class="collapse" id="base">
@@ -165,8 +165,20 @@
 
 						
 					</ul>
-				</div>
+
 			</div>
-		</div>
+		
+		<script>
+			function toggle(){
+				if(document.getElementById("togglingid").style.display=="none"){
+				document.getElementById("togglingid").style.display="none";
+				}
+				else{
+					document.getElementById("togglingid").style.display="block";
+				}
+				console.log("toggled");
+			}
+			
+		</script>
         <!-- End Sidebar -->
         
