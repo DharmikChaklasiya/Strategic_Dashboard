@@ -7,15 +7,31 @@
 
 <!-- Specific Page CSS goes HERE  -->
 {% block stylesheets %}
-<style>
-   .thead-light td{
-margin: 0 !important;
-    }
-    #textsmaller td{
-        font-size: small !important;
-        min-width:fit-content;
-    }
-.Container{
+    <style>
+        .modal-header {
+            background-color: #3D8EB9;
+            color: white;
+        }
+
+        .modal-title {
+            font-weight: bold;
+        }
+
+        #tables td, #tables tr {
+            padding: 0px !important;
+            border-color: lightgreen !important;
+        }
+
+        .thead-light td {
+            margin: 0 !important;
+        }
+
+        #textsmaller td {
+            font-size: small !important;
+            min-width: fit-content;
+        }
+
+        .Container {
             height: inherit;
             width: inherit;
             overflow-y: auto;
@@ -23,33 +39,14 @@ margin: 0 !important;
             border-radius: 5px;
             margin: 0 auto;
         }
-         
-        .Content{
+
+        .Content {
             width: 540px;
             color: white;
             text-align: center;
         }
-         
-        
-        /* ::-webkit-scrollbar {
-            width: 3px;
-        }
 
-        ::-webkit-scrollbar-track {
-            background: gainsboro;
-            border-radius: 5px;
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: black;
-            border-radius: 5px;
-        }
-     
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: #555;
-        } */
-</style>
+    </style>
 {% endblock stylesheets %}
 
 {% block content %}
@@ -77,7 +74,7 @@ margin: 0 !important;
                             <div class="modal-dialog">
                                 <div class="modal-content">
                                     <div class="modal-header">
-                                        <h1 class="modal-title fs-5" id="exampleModalLabel">Add a table</h5>
+                                        <h1 class="modal-title fs-5" id="exampleModalLabel">Add a table</h1>
                                     </div>
                                     <form id="formsadd" method="POST" action="addTable" class="row g-3 p-2">
                                         {% csrf_token %}
@@ -101,69 +98,75 @@ margin: 0 !important;
                     </div>
                 </div>
             </div>
-        </div>
+        </div></div>
         {% for table in tables %}
-            <div class="fluid-container text-center border m-3">
-                <table class="table table-responsive" style="overflow-x:overlay;">
+            <div class="fluid-container text-center border m-3 mx-5 my-5">
+                <table id="tables" class="table table-responsive" style="overflow-x:overlay;">
                     <div class="d-flex flex-row justify-content-between">
                         <div class="d-flex flex-row" style="margin: 0px !important; padding: 0px !important;">
                             <h3 class="lead mx-5">{{ table }}</h3>
-                            
-                            
+
+
                         </div>
                         <div class="d-flex">
-                        <button class="btn btn-success mx-2 py-0 my-1 px-3" data-bs-toggle="modal"
+                            <button class="btn btn-success mx-2 py-0 my-1 px-3" data-bs-toggle="modal"
                                     data-bs-target="#{{ table|addspaces }}{{ i }}">Edit
-                        </button>
-                        <form method="post" action="deletetable">
+                            </button>
+                            <form method="post" action="deletetable">
                                 {% csrf_token %}
-                                <input id="oldName" type="text" name="tableoldname" class="form-control" value="{{ table }}" hidden>
-                                <button type="submit" class="btn btn-success mx-2 py-0 my-1 px-3" onclick="return confirm('Are you sure?');">Delete</button>
-                        </form>
-                        <!-- Modal -->
-                        <div class="modal fade" id="{{ table|addspaces }}{{ i }}" tabindex="-1"
-                             aria-labelledby="exampleModalLabel" aria-hidden="true">
-                            <div class="modal-dialog">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h1 class="modal-title fs-5" id="exampleModalLabel">Edit table</h5>
+                                <input id="oldName" type="text" name="tableoldname" class="form-control"
+                                       value="{{ table }}" hidden>
+                                <button type="submit" class="btn btn-success mx-2 py-0 my-1 px-3"
+                                        onclick="return confirm('Are you sure?');">Delete
+                                </button>
+                            </form>
+                            <!-- Modal -->
+                            <div class="modal fade" id="{{ table|addspaces }}{{ i }}" tabindex="-1"
+                                 aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h1 class="modal-title fs-5" id="exampleModalLabel">Edit table</h1>
+                                        </div>
+                                        <form id="tableedit" method="POST" action="editTable" class="row g-3 p-2">
+                                            {% csrf_token %}
+                                            <div class="modal-body">
+                                                <div class="col-md-12">
+                                                    <input type="hidden" name="tableid" value="{{ table.id }}">
+                                                    <input id="oldName" type="text" name="tableoldname"
+                                                           class="form-control" value="{{ table }}" hidden>
+                                                </div>
+                                                <div class="col-md-12">
+                                                    <label class="form-label" aria-disabled="true">New Name</label>
+                                                    <input id="itsName" type="text" name="tablenewname"
+                                                           class="form-control" required>
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                                    Close
+                                                </button>
+                                                <button type="submit" class="btn btn-primary">Save changes</button>
+                                            </div>
+                                        </form>
+
                                     </div>
-                                    <form id="tableedit" method="POST" action="editTable" class="row g-3 p-2">
-                                        {% csrf_token %}
-                                        <div class="modal-body">
-                                            <div class="col-md-12">
-                                                <input id="oldName" type="text" name="tableoldname" class="form-control"
-                                                       value="{{ table }}" hidden>
-                                            </div>
-                                            <div class="col-md-12">
-                                                <label class="form-label" aria-disabled="true">New Name</label>
-                                                <input id="itsName" type="text" name="tablenewname" class="form-control"
-                                                       required>
-                                            </div>
-                                        </div>
-                                        <div class="modal-footer">
-                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                                                Close
-                                            </button>
-                                            <button type="submit" class="btn btn-primary">Save changes</button>
-                                        </div>
-                                    </form>
                                 </div>
                             </div>
-                        </div>
 
-                        <div>
-                            <button type="button" class="btn btn-success mx-2 my-1 px-3" data-bs-toggle="modal"
-                                    data-bs-target="#{{ table|addspaces }}">Add
-                            </button>
+                            <div>
+                                <button type="button" class="btn btn-success mx-2 my-1 px-3" data-bs-toggle="modal"
+                                        data-bs-target="#{{ table|addspaces }}">Add
+                                </button>
+                            </div>
                         </div>
-                    </div>
-                        <div class="modal fade" id="{{ table|addspaces }}" tabindex="-1" aria-labelledby="exampleModalLabel"
+                        <div class="modal fade" id="{{ table|addspaces }}" tabindex="-1"
+                             aria-labelledby="exampleModalLabel"
                              aria-hidden="true">
                             <div class="modal-dialog">
                                 <div class="modal-content">
                                     <div class="modal-header">
-                                        <h1 class="modal-title fs-5" id="exampleModalLabel">Add a row</h5>
+                                        <h1 class="modal-title fs-5" id="exampleModalLabel">Add a row</h1>
                                     </div>
                                     <form id="addrows" method="POST" action="addRows" class="row g-3 p-2">
                                         {% csrf_token %}
@@ -172,34 +175,31 @@ margin: 0 !important;
                                                    value="{{ table }}" hidden/>
 
                                             <div class="col-md-12">
-                                                <label class="form-label">Name</label>
+                                                <label for="Teilindikator" class="form-label">Name</label>
                                                 <input id="Teilindikator" type="text" name="Teilindikator"
                                                        class="form-control" required/>
                                             </div>
+
                                             <div class="col-md-12">
-                                                <label class="form-label">Datenquelle</label>
-                                                <div class="d-flex flex-row">
-                                                <!-- <div class="m-1">
-                                                <label class="form-label">Label</label>
-                                                <input id="Datenquelle" type="text" name="Datenquelle"
-                                                       class="form-control" required/>
-                                                </div> -->
-                                                <div class="m-1 mt-4">
-                                                    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                                        <span id="selected">Select Label</span>
-                                                    </button>
-                                                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                                      <a class="dropdown-item" href="#">Eurostat</a>
-                                                      <a class="dropdown-item" href="#">World Bank</a>
-                                                      <a class="dropdown-item" href="#">OECD</a>
+                                                <label for="Datenquelle" class="form-label">Datenquelle</label>
+                                                <div class="row">
+                                                    <div class="col-md-4">
+                                                        <select id="Datenquelle" name="Datenquelle"
+                                                                class="form-select custom-select"
+                                                                aria-label="Default select example">
+                                                            <option selected>Select Label</option>
+                                                            <option value="Eurostat">Eurostat</option>
+                                                            <option value="WorldBank">World Bank</option>
+                                                            <option value="OECD">OECD</option>
+                                                        </select>
                                                     </div>
-                                                  </div>
-                                                <div class="m-1">
-                                                    <label class="form-label">Code</label>
-                                                <input id="datasetCode" type="text" name="datasetcode"
-                                                       class="form-control" required/>
+
+                                                    <div class="col-md-8">
+                                                        <input id="datasetCode" type="text" name="datasetcode"
+                                                               class="form-control" placeholder="Enter Dataset Code"
+                                                               required/>
+                                                    </div>
                                                 </div>
-                                            </div>
                                             </div>
                                         </div>
                                         <div class="modal-footer">
@@ -232,60 +232,89 @@ margin: 0 !important;
                     <tbody id="textsmaller">
                     {% for resul in result %}
                         {% if resul.Tables|removespaces == table|removespaces %}
-                            <tr>
-                                <td>{{ resul.id }}</td>         
+                            <tr id="{{ resul.Datenquelle }}{{ forloop.counter }}">
+                                <td>{{ resul.id }}</td>
                                 <td>{{ resul }}</td>
-                                <td>{{ resul.Datenquelle }}</td>
+                                <td class="text-primary fw-bold">{{ resul.Datenquelle }}</td>
                                 <td>{{ resul.Datum }}</td>
-                                <td style="color: green;font-weight: bolder;">{{ resul.Status }}</td>
+                                {% if resul.Status == "Update available" %}
+                                    <td style="color:Red; font-weight: bolder;">Update</td>
+                                {% else %}
+                                    <td style="color: green;font-weight: bolder;">{{ resul.Status }}</td>
+                                {% endif %}
                                 <td>{{ resul.Wert }}</td>
                                 <td>{{ resul.Top3 }}</td>
                                 <td>{{ resul.EUDurchschnitt }}</td>
-                                <td class="d-flex m-0">
-                                    <div class="m-1">
-                                    <button class="btn btn-primary text-light"><a class="text-light" href="Krieslaufwirtschaft/{{resul.Code}}"><i class="bi bi-eye"></i></a>
-                                    </button></div>
-                                    <div class="m-1">
-                                    <button class="btn btn-primary" data-bs-toggle="modal"
-                                            data-bs-target=#{{ resul }}><i class="bi bi-pencil-fill"></i>
-                                    </button></div>
-                                    <form class="m-1" id="deleteRows" method="post" action="deleterows">{% csrf_token %}<input
-                                        id="recordid" type="text" name="recordid" class="form-control"
-                                        value={{ resul.id }} hidden/>
-                                    <button class="btn btn-primary" data-bs-toggle="modal" onclick="return confirm('Are you sure?');"
-                                            data-bs-target=#{{ resul }}{i}><i class="bi bi-trash-fill"></i>
-                                    </button>
-                                </form>
+                                <td class="m-0" style="padding: 0px !important;">
+                                    <div class="d-flex flex-row">
+                                        <div class="m-1">
+                                            {% if resul.Status == "Update available" %}
+                                                <button onclick="function execute(){let form = document.getElementById('{{ resul }}{{ resul.id }}'); form.action='editrows'; form.submit();} execute();"
+                                                        class="btn btn-primary bg-warning">Update
+                                                </button>
+                                            {% else %}
+                                                <button onclick="function execute(){let form = document.getElementById('{{ resul }}{{ resul.id }}'); form.action='check_update'; form.submit();} execute();"
+                                                        class="btn btn-primary"><i class="bi bi-arrow-clockwise"></i>
+                                                </button>
+                                            {% endif %}
+                                        </div>
+                                        <div class="m-1">
+                                            <button class="btn btn-primary text-light"><a class="text-light"
+                                                                                          href="Krieslaufwirtschaft/{{ resul.Code }}/{{ resul.Datenquelle }}"><i
+                                                    class="bi bi-eye"></i></a>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex flex-row">
+                                        <div class="m-1">
+                                            <button class="btn btn-primary" data-bs-toggle="modal"
+                                                    data-bs-target="#{{ resul|addspaces }}"><i
+                                                    class="bi bi-pencil-fill"></i>
+                                            </button>
+                                        </div>
+                                        <form class="m-1" id="deleteRows" method="post"
+                                              action="deleterows">{% csrf_token %}<input
+                                                id="recordid" type="text" name="recordid" class="form-control"
+                                                value={{ resul.id }} hidden/>
+                                            <button type="submit" class="btn btn-primary" data-bs-toggle="modal"
+                                                    onclick="return confirm('Are you sure?');"><i
+                                                    class="bi bi-trash-fill"></i>
+                                            </button>
+                                        </form>
+                                    </div>
                                 </td>
-                                <!-- <td>
-                                    <button class="btn btn-primary" data-bs-toggle="modal"
-                                            data-bs-target=#{{ resul }}><i class="bi bi-pencil-fill"></i>
-                                    </button>
+
+                                <td class="flex-row m-0 align-items-center" style="padding: 10px !important;">
+                                    <div class="m-0">
+                                        <form class="m-0" id="visualization" method="post" action="">{% csrf_token %}
+                                            <input id="recordCode" type="text" name="recordCode" class="form-control"
+                                                value="{{ resul.Code }}" hidden/>
+                                            <input id="recordid" type="text" name="recordDatenquelle"
+                                                    class="form-control"
+                                                    value={{ resul.Datenquelle }} hidden/>
+                                            <button type="submit" class="btn btn-primary" data-bs-toggle="modal"><i
+                                                    class="bi bi-graph-up"></i>
+                                            </button>
+                                        </form>
+                                    </div>
                                 </td>
-                                <td>
-                                    <form id="deleteRows" method="post" action="deleterows">{% csrf_token %}<input
-                                            id="recordid" type="text" name="recordid" class="form-control"
-                                            value={{ resul.id }} hidden/>
-                                        <button class="btn btn-primary" data-bs-toggle="modal" onclick="return confirm('Are you sure?');"
-                                                data-bs-target=#{{ resul }}{i}><i class="bi bi-trash-fill"></i>
-                                        </button>
-                                    </form>
-                                </td> -->
                             </tr>
-                            <div class="modal fade" id={{ resul }} tabindex="-1" aria-labelledby="exampleModalLabel"
+                            <div class="modal fade" id="{{ resul|addspaces }}" tabindex="-1"
+                                 aria-labelledby="exampleModalLabel"
                                  aria-hidden="true">
                                 <div class="modal-dialog">
                                     <div class="modal-content">
                                         <div class="modal-header">
-                                            <h1 class="modal-title fs-5" id="exampleModalLabel">Edit a table</h5>
+                                            <h1 class="modal-title fs-5" id="exampleModalLabel">Edit an Indicator Details</h1>
                                         </div>
-                                        <form id="addrows" method="POST" action="editrows" class="row g-3 p-2">
+                                        <form id="{{ resul }}{{ resul.id }}" method="POST" action="editrows"
+                                              class="row g-3 p-2">
                                             {% csrf_token %}
                                             <div class="modal-body">
                                                 <input id="recordid" type="text" name="recordid" class="form-control"
-                                                       value={{ resul.id }} hidden/>
+                                                       value="{{ resul.id }}" hidden/>
                                                 <input id="tablee" type="text" name="tablee" class="form-control"
-                                                value="{{ table }}" hidden/>
+                                                       value="{{ table }}" hidden/>
 
                                                 <div class="col-md-12">
                                                     <label class="form-label">Name</label>
@@ -294,15 +323,21 @@ margin: 0 !important;
                                                 </div>
                                                 <div class="col-md-12">
                                                     <label class="form-label">Datenquelle</label>
-                                                    <input id="Datenquelle" type="text" name="Datenquelle"
-                                                           class="form-control" value="{{ resul.Datenquelle }}" required/>
+                                                    <select name="Datenquelle" class="form-select custom-select"
+                                                            aria-label="Default select example">
+                                                        <option selected>{{ resul.Datenquelle }}</option>
+                                                        <option value="Eurostat">Eurostat</option>
+                                                        <option value="WorldBank">World Bank</option>
+                                                        <option value="OECD">OECD</option>
+                                                    </select>
+
                                                 </div>
                                                 <div class="col-md-12">
                                                     <label class="form-label">Code</label>
                                                     <input id="Code" type="text" name="Code"
                                                            class="form-control" value="{{ resul.Code }}" required/>
                                                 </div>
-                                                
+
                                             </div>
                                             <div class="modal-footer">
                                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
@@ -319,37 +354,51 @@ margin: 0 !important;
                         {% endif %}
                     {% endfor %}
             </tbody>
+        </div>
             </table>
             </div>
         {% endfor %}</div></div>
+    </div>
+    {% if checking == "yes" %}
+        <div id="tableofdata" class="modal d-block" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+             aria-hidden="true">
+            <div class="modal-dialog modal-dialog-scrollable" role="document">
+                <div class="modal-content"
+                     style="background-color: #E9F1F7; width: 700px; margin-left: auto; margin-right: auto;">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Data</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <a style="color: black;" href="/dashboard/Krieslaufwirtschaft"> <span aria-hidden="true">Close &times;</span></a>
+                        </button>
+                    </div>
+                    <div class="modal-body m-3" style="height: 570px;">
+                        <div class="Container">
+                            <div id="content" class="Content"> {% block table %}{% endblock table %}</div>
                         </div>
-        {% if checking == "yes" %}
-        <div id="tableofdata" class="modal d-block" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-                                <div class="modal-dialog modal-dialog-scrollable" role="document">
-                                  <div class="modal-content" style="background-color: #E9F1F7; width: 700px; margin-left: auto; margin-right: auto;">
-                                    <div class="modal-header">
-                                      <h5 class="modal-title">Data</h5>
-                                      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                       <a style="color: black;" href="/dashboard/Krieslaufwirtschaft"> <span aria-hidden="true">Close &times;</span></a>
-                                      </button>
-                                    </div>
-                                    <div class="modal-body m-3" style="height: 570px;">
-<div class="Container">
-                                        <div class="Content">{% block table %}{% endblock table %}</div>
-                                        </div>
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-                            
-                            {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <span id="accessible2">{{ Heads }}</span>
+        <span id="accessible3">{{ top3 }}</span>
+        <span id="accessible4">{{ average }}</span>
+        <span id="accessible5">{{ ATcolumn }}</span>
+    {% endif %}
 {% endblock content %}
 
 <!-- Specific Page JS goes HERE  -->
 {% block javascripts %}
-<script>
-$('.dropdown-menu a').click(function(){
-    $('#selected').text($(this).text());
-  });
-</script>
+    <script>
+        $('.dropdown-menu a').click(function () {
+            $('#selected').text($(this).text());
+        });
+
+        function submitForm(resul) {
+            let form = document.getElementById(resul);
+            form.submit();
+            console.log("form submitted");
+        }
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.5.1/chart.min.js"></script>
+
 {% endblock javascripts %}

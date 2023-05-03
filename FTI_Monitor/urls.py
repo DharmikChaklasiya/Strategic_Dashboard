@@ -12,5 +12,6 @@ urlpatterns = [
     path('editrows',FTI_Monitor.views.editrows, name='editrows'),
     path('deleterows',FTI_Monitor.views.deleterows, name='deleterows'),
     path('deletetable',FTI_Monitor.views.deletetable, name='deletetable'),
-    path('Krieslaufwirtschaft/<slug:slug>',FTI_Monitor.views.displaydata,name='displaydata')
+    path('Krieslaufwirtschaft/<str:str>/<str:type>',FTI_Monitor.views.displaydata,name='displaytable'),
+    path('check_update',FTI_Monitor.views.check_update,name='check_update')
 ]

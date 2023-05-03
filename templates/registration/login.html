@@ -7,6 +7,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{% static 'assets/css/login.css' %}">
     <title>LoginSystem</title>
+    <style>
+        a:hover {
+          color: red;
+          background-color: transparent;
+          text-decoration: underline;
+}
+    </style>
+
 </head>
 <body>
 
@@ -32,7 +40,7 @@
     <span id="span1"> <input type="submit" value="Login"/></span>
 
 </form>
-<p class="text-center">If you don't have an account, <a href="/register">Register</a> instead.</p>
+<p class="text-center"> If you don't have an account, <a href="/register"> Register</a> instead.</p>
 <script>
     function myFunction() {
         var x = document.getElementById("myInput");
